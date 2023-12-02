@@ -14,6 +14,8 @@ cap = cv2.VideoCapture(v)
 if (cap.isOpened()== False): 
   print("Error opening video stream or file")
 
+last_detected_area = set([])
+
 while cap.isOpened():
     ret, frame = cap.read()
 
@@ -42,9 +44,10 @@ while cap.isOpened():
         #if proportion > 2 and  proportion <=2.8 :    
         with_draw = binary_frame.copy()
         if area > 3500 and area < 5000:
-            print(area)
-            with_draw = cv2.rectangle( binary_frame, p1, p2, (255,255,0), thickness=10)
-
+            if area in last_detected_area:
+                with_draw = cv2.rectangle( binary_frame, p1, p2, (255,255,0), thickness=10)
+            else:
+                last_detected_area.update([a for a in range(area-50,area+50)])
     cv2.imshow('Frame',with_draw)
     
     if cv2.waitKey(81) & 0xFF == ord('q'):
